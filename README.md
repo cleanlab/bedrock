@@ -56,7 +56,7 @@ $ curl localhost:8080/status/alice
   "status": "On vacation in Tahiti."
 }
 
-# wait for a day...
+$ # wait for a day...
 $ curl localhost:8080/status/alice
 {
   "status": null
