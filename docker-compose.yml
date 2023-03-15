@@ -1,0 +1,77 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:13
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+
+  redis:
+    image: redislabs/rejson:2.2.0
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - redis:/bitnami/redis/data
+
+  backend:
+    image: bedrock/backend:latest
+    volumes:
+      - ./backend/backend:/backend
+    environment:
+      DB_NAME: postgres
+      DB_USERNAME: postgres
+      DB_PASSWORD: password
+      DB_HOST: postgres
+      DB_PORT: 5432
+    ports:
+      - 8080:8080
+    build:
+      dockerfile: Dockerfile.backend
+      context: ./backend
+    restart: on-failure
+    depends_on:
+      postgres:
+        condition: service_started
+
+  worker:
+    image: bedrock/worker:latest
+    volumes:
+      - ./backend/backend:/backend
+    environment:
+      DB_NAME: postgres
+      DB_USERNAME: postgres
+      DB_PASSWORD: password
+      DB_HOST: postgres
+      DB_PORT: 5432
+    build:
+      dockerfile: Dockerfile.worker
+      context: ./backend
+    restart: on-failure
+    depends_on:
+      postgres:
+        condition: service_started
+
+  beat:
+    image: bedrock/beat:latest
+    volumes:
+      - ./backend/backend:/backend
+    environment:
+      DB_NAME: postgres
+      DB_USERNAME: postgres
+      DB_PASSWORD: password
+      DB_HOST: postgres
+      DB_PORT: 5432
+    build:
+      dockerfile: Dockerfile.beat
+      context: ./backend
+    restart: on-failure
+    depends_on:
+      postgres:
+        condition: service_started
+
+volumes:
+  postgres:
+  redis:
