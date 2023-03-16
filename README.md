@@ -68,11 +68,15 @@ $ curl localhost:8080/status/alice
 If you want an idea for a warm-up exercise to get familiar with modifying the
 code (DB models, routes, Celery tasks, ...), here are some ideas:
 
-- Add a `/users` route that lists all users
-- Twitter profile integration
-    - Add an API endpoint to let a user set their Twitter username (it may be
-      different from the username they used to register on this site), e.g.,
-      `PATCH /user` with `{"twitter_username": "<username>"}`
-    - Add an API endpoint `GET /feed` that lists the 10 most recent tweets,
-      across all users registered on this site (who have set their Twitter
-      usernames)
+- Add a `/users` route that lists all users.
+- Get a user's email via their GitHub profile.
+    - Add a `/email/<username>` endpoint that returns a user's email address by
+      looking it up in their GitHub profile.
+    - Use the GitHub REST API, or the
+      [PyGithub](https://github.com/PyGithub/PyGithub) library (recommended).
+    - You might need to get a GitHub personal access token (and create the
+      client with `github = Github("<YOUR TOKEN HERE>")`. You can create a
+      token [here](https://github.com/settings/tokens). You can create a
+      "Personal access token (classic)" and leave all the checkboxes empty: you
+      only need read-only access to public information, which needs access to
+      none of the specialized scopes.
